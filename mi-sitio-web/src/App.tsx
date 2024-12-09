@@ -1,7 +1,6 @@
 import Navbar from './components/Navbar'
 import ContactForm from './components/ContactForm'
 import Footer from './components/Footer'
-import Logo from './components/Logo'
 import { FaWhatsapp } from 'react-icons/fa'
 
 // Importar imágenes
