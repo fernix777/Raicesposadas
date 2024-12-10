@@ -1,12 +1,18 @@
+import { Suspense, lazy } from 'react'
+import { motion, LazyMotion, domAnimation } from 'framer-motion'
 import Navbar from './components/Navbar'
-import ContactForm from './components/ContactForm'
-import Footer from './components/Footer'
-import { FaWhatsapp } from 'react-icons/fa'
+import { FaWhatsapp, FaEnvelope } from 'react-icons/fa'
 
-// Importar imágenes
-import nivelInicialImg from './assets/niveles/nivel-inicial.jpg'
-import nivelPrimarioImg from './assets/niveles/nivel-primario.jpg'
-import nivelSecundarioImg from './assets/niveles/nivel-secundario.jpg'
+// Lazy loading de componentes
+const ContactForm = lazy(() => import('./components/ContactForm'))
+const MapComponent = lazy(() => import('./components/MapComponent'))
+const Footer = lazy(() => import('./components/Footer'))
+
+// Optimización de imágenes
+import heroBackground from './assets/hero-background.jpg?url'
+import nivelInicialImg from './assets/niveles/nivel-inicial.jpg?url'
+import nivelPrimarioImg from './assets/niveles/nivel-primario.jpg?url'
+import nivelSecundarioImg from './assets/niveles/nivel-secundario.jpg?url'
 
 function App() {
   const openWhatsApp = (message: string) => {
@@ -16,190 +22,339 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
-      <main className="flex-grow">
-        <section id="inicio" className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-green-600 to-green-800 text-white">
-          <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
-            <div className="text-center md:text-left">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">Raices de Posadas</h1>
-              <p className="text-xl md:text-2xl mb-8">Educación que trasciende</p>
-              <p className="text-lg text-green-100 mb-8">Formando líderes del mañana desde 1990</p>
-              <div className="flex justify-center md:justify-start space-x-4">
-                <a 
-                  href="#propuesta" 
-                  className="bg-white text-green-700 hover:bg-green-100 px-6 py-3 rounded-full transition duration-300 font-semibold"
+    <LazyMotion features={domAnimation}>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        
+        <main className="flex-grow">
+          {/* Sección Hero con Imagen de Fondo */}
+          <motion.section 
+            id="inicio" 
+            className="relative h-screen w-full bg-cover bg-center flex items-center justify-center"
+            style={{ 
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${heroBackground})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ 
+              duration: 0.5, 
+              ease: "easeInOut" 
+            }}
+          >
+            <div className="text-center text-white z-10 px-4">
+              <motion.h1
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.4, 
+                  ease: "easeOut" 
+                }}
+                className="text-5xl font-bold mb-6"
+              >
+                Raíces de Posadas
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.4, 
+                  delay: 0.2,
+                  ease: "easeOut" 
+                }}
+                className="text-xl mb-8"
+              >
+                Educación de calidad para un futuro brillante
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: 0.4,
+                  ease: "easeOut" 
+                }}
+                className="flex justify-center space-x-4"
+              >
+                <button 
+                  onClick={() => openWhatsApp('Quiero más información')}
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full transition duration-300 flex items-center"
                 >
-                  Conoce Más
-                </a>
-                <a 
-                  href="#contacto" 
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-green-700 px-6 py-3 rounded-full transition duration-300 font-semibold"
+                  <FaWhatsapp className="mr-2" /> Contáctanos
+                </button>
+              </motion.div>
+            </div>
+          </motion.section>
+
+          <section id="propuesta" className="py-20 bg-gray-50">
+            <div className="container mx-auto px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7 }}
+                viewport={{ once: true }}
+                className="text-center mb-12"
+              >
+                <motion.h2 
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="text-4xl font-bold text-green-800 mb-4"
                 >
-                  Contáctanos
+                  Nuestra Propuesta Educativa
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="text-xl text-gray-600 max-w-3xl mx-auto"
+                >
+                  Formamos estudiantes comprometidos, creativos y preparados para los desafíos del futuro.
+                </motion.p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-3 gap-8">
+                {[
+                  {
+                    icon: '🌱',
+                    title: 'Desarrollo Integral',
+                    description: 'Fomentamos el crecimiento académico, emocional y social.'
+                  },
+                  {
+                    icon: '🧠',
+                    title: 'Innovación Educativa',
+                    description: 'Metodologías modernas que impulsan el pensamiento crítico.'
+                  },
+                  {
+                    icon: '🌍',
+                    title: 'Valores Fundamentales',
+                    description: 'Formación en valores de respeto, responsabilidad y empatía.'
+                  }
+                ].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      rotate: 3,
+                      transition: { duration: 0.2 }
+                    }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: index * 0.2,
+                      type: "spring",
+                      stiffness: 120
+                    }}
+                    viewport={{ once: true }}
+                    className="bg-white p-8 rounded-xl shadow-lg text-center transform transition duration-300 hover:shadow-xl"
+                  >
+                    <motion.div 
+                      initial={{ rotate: -10, opacity: 0 }}
+                      whileInView={{ rotate: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: index * 0.2 }}
+                      className="text-6xl mb-6"
+                    >
+                      {item.icon}
+                    </motion.div>
+                    <h3 className="text-2xl font-semibold text-green-700 mb-4">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600">
+                      {item.description}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.6 }}
+                viewport={{ once: true }}
+                className="text-center mt-12"
+              >
+                <a 
+                  href="#niveles"
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full inline-block transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Conoce Nuestros Niveles
                 </a>
-              </div>
+              </motion.div>
             </div>
-            
-            <div className="relative w-full max-w-2xl mx-auto">
-              <div className="aspect-video rounded-xl overflow-hidden shadow-2xl">
-                <iframe 
-                  width="100%" 
-                  height="100%" 
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ" 
-                  title="Video Institucional"
-                  frameBorder="0" 
-                  allow="autoplay; encrypted-media" 
-                  allowFullScreen
-                  className="w-full h-full object-cover"
-                ></iframe>
-              </div>
-            </div>
-          </div>
-        </section>
+          </section>
 
-        <section id="propuesta" className="min-h-screen flex items-center justify-center bg-white">
-          <div className="container mx-auto px-4 py-16">
-            <h2 className="text-3xl font-bold text-center mb-12 text-green-800">Propuesta Educativa</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-semibold mb-4 text-green-700">Educación Integral</h3>
-                <p className="text-gray-600">Formación académica, valores y desarrollo personal en un ambiente de respeto y compromiso.</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-semibold mb-4 text-green-700">Innovación Educativa</h3>
-                <p className="text-gray-600">Metodologías modernas y tecnología integrada en el proceso de aprendizaje.</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-semibold mb-4 text-green-700">Valores y Tradición</h3>
-                <p className="text-gray-600">Compromiso con la excelencia académica y la formación en valores.</p>
+          <section id="nosotros" className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="container mx-auto px-4 py-16">
+              <h2 className="text-3xl font-bold text-center mb-8 text-green-800">Sobre Nosotros</h2>
+              <div className="max-w-3xl mx-auto text-center">
+                <p className="text-xl text-gray-600 mb-6">
+                  Con más de 30 años de trayectoria, Raices de Posadas se ha consolidado como una institución líder en educación en la región.
+                  Nuestro compromiso con la excelencia académica y la formación integral de nuestros estudiantes nos distingue.
+                </p>
+                <p className="text-xl text-gray-600">
+                  Contamos con un equipo docente altamente calificado y una infraestructura moderna que permite el desarrollo óptimo de todas las actividades educativas.
+                </p>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section id="nosotros" className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="container mx-auto px-4 py-16">
-            <h2 className="text-3xl font-bold text-center mb-8 text-green-800">Sobre Nosotros</h2>
-            <div className="max-w-3xl mx-auto text-center">
-              <p className="text-xl text-gray-600 mb-6">
-                Con más de 30 años de trayectoria, Raices de Posadas se ha consolidado como una institución líder en educación en la región.
-                Nuestro compromiso con la excelencia académica y la formación integral de nuestros estudiantes nos distingue.
-              </p>
-              <p className="text-xl text-gray-600">
-                Contamos con un equipo docente altamente calificado y una infraestructura moderna que permite el desarrollo óptimo de todas las actividades educativas.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section id="niveles" className="min-h-screen flex items-center justify-center bg-white">
-          <div className="container mx-auto px-4 py-16">
-            <h2 className="text-3xl font-bold text-center mb-12 text-green-800">Niveles Educativos</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
-                <img 
-                  src={nivelInicialImg} 
-                  alt="Nivel Inicial" 
-                  className="w-full h-64 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-4 text-green-700">Nivel Inicial</h3>
-                  <p className="text-gray-600 mb-4">
-                    Jardín de infantes con programas adaptados para el desarrollo temprano y estimulación integral.
-                  </p>
-                  <button 
-                    onClick={() => openWhatsApp('Consulta sobre Nivel Inicial')}
-                    className="w-full flex items-center justify-center bg-green-500 text-white py-2 rounded-full hover:bg-green-600 transition duration-300"
+          <motion.section 
+            id="niveles" 
+            className="py-20 bg-white"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ 
+              duration: 0.5, 
+              ease: "easeInOut" 
+            }}
+          >
+            <div className="container mx-auto px-4">
+              <h2 className="text-4xl font-bold text-center mb-12 text-green-800">Nuestros Niveles</h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                {[
+                  {
+                    img: nivelInicialImg,
+                    title: 'Nivel Inicial',
+                    description: 'Primeros pasos en el aprendizaje'
+                  },
+                  {
+                    img: nivelPrimarioImg,
+                    title: 'Nivel Primario',
+                    description: 'Formación integral y fundamental'
+                  },
+                  {
+                    img: nivelSecundarioImg,
+                    title: 'Nivel Secundario',
+                    description: 'Preparación para el futuro'
+                  }
+                ].map((nivel, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ 
+                      duration: 0.3, 
+                      delay: index * 0.1,
+                      ease: "easeOut" 
+                    }}
+                    className="bg-white rounded-xl shadow-lg overflow-hidden"
                   >
-                    <FaWhatsapp className="mr-2" /> Consultar
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
-                <img 
-                  src={nivelPrimarioImg} 
-                  alt="Nivel Primario" 
-                  className="w-full h-64 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-4 text-green-700">Nivel Primario</h3>
-                  <p className="text-gray-600 mb-4">
-                    Educación básica con énfasis en fundamentos académicos, valores y desarrollo personal.
-                  </p>
-                  <button 
-                    onClick={() => openWhatsApp('Consulta sobre Nivel Primario')}
-                    className="w-full flex items-center justify-center bg-green-500 text-white py-2 rounded-full hover:bg-green-600 transition duration-300"
-                  >
-                    <FaWhatsapp className="mr-2" /> Consultar
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
-                <img 
-                  src={nivelSecundarioImg} 
-                  alt="Nivel Secundario" 
-                  className="w-full h-64 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-4 text-green-700">Nivel Secundario</h3>
-                  <p className="text-gray-600 mb-4">
-                    Formación integral preparando a los estudiantes para su futuro académico y profesional.
-                  </p>
-                  <button 
-                    onClick={() => openWhatsApp('Consulta sobre Nivel Secundario')}
-                    className="w-full flex items-center justify-center bg-green-500 text-white py-2 rounded-full hover:bg-green-600 transition duration-300"
-                  >
-                    <FaWhatsapp className="mr-2" /> Consultar
-                  </button>
-                </div>
+                    <img 
+                      src={nivel.img} 
+                      alt={nivel.title} 
+                      loading="lazy"
+                      className="w-full h-64 object-cover"
+                    />
+                    <div className="p-6">
+                      <h3 className="text-2xl font-semibold text-green-700 mb-4">
+                        {nivel.title}
+                      </h3>
+                      <p className="text-gray-600">
+                        {nivel.description}
+                      </p>
+                      <button 
+                        onClick={() => openWhatsApp(`Consulta sobre ${nivel.title}`)}
+                        className="w-full flex items-center justify-center bg-green-500 text-white py-2 rounded-full hover:bg-green-600 transition duration-300"
+                      >
+                        <FaWhatsapp className="mr-2" /> Consultar
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
-          </div>
-        </section>
+          </motion.section>
 
-        <section id="contacto" className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="container mx-auto px-4 py-16">
-            <h2 className="text-3xl font-bold text-center mb-8 text-green-800">Contacto</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <div className="max-w-3xl mx-auto text-center mb-8">
-                  <p className="text-gray-600">
-                    ¿Tienes alguna pregunta o te gustaría obtener más información? 
-                    Completa el formulario y nos pondremos en contacto contigo a la brevedad.
+          <Suspense fallback={<div className="h-screen flex items-center justify-center">Cargando...</div>}>
+            <motion.section 
+              id="contacto" 
+              className="py-20 bg-gray-50"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ 
+                duration: 0.5, 
+                ease: "easeInOut" 
+              }}
+            >
+              <div className="container mx-auto px-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.4, 
+                    ease: "easeOut" 
+                  }}
+                  className="text-center mb-12"
+                >
+                  <h2 className="text-4xl font-bold text-green-800 mb-4">
+                    Contáctanos
+                  </h2>
+                  <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Estamos aquí para responder todas tus preguntas.
                   </p>
-                </div>
-                <ContactForm />
-              </div>
-              
-              <div className="flex flex-col">
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden flex-grow">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3541.7980117765!2d-55.89613968503298!3d-27.36778628285348!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9457beb41e6e4b0d%3A0x8a0b59c7b2c5bca3!2sPosadas%2C%20Misiones!5e0!3m2!1ses!2sar!4v1702085348990!5m2!1ses!2sar"
-                    width="100%" 
-                    height="100%" 
-                    style={{border:0}} 
-                    allowFullScreen={true} 
-                    loading="lazy" 
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="w-full h-full"
-                  ></iframe>
-                </div>
-                <div className="mt-4 text-center">
-                  <h3 className="text-xl font-semibold text-green-800">Nuestra Ubicación</h3>
-                  <p className="text-gray-600">Posadas, Misiones, Argentina</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+                </motion.div>
 
-      <Footer />
-    </div>
+                <div className="grid md:grid-cols-2 gap-12">
+                  <ContactForm />
+                  <Suspense fallback={<div>Cargando mapa...</div>}>
+                    <motion.div
+                      initial={{ opacity: 0, x: 30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ 
+                        duration: 0.4, 
+                        delay: 0.2,
+                        ease: "easeOut" 
+                      }}
+                    >
+                      <MapComponent />
+                      
+                      <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                        className="mt-6 text-center"
+                      >
+                        <h3 className="text-2xl font-semibold text-green-800 mb-4">
+                          Nuestra Ubicación
+                        </h3>
+                        <p className="text-gray-600">
+                          Av. Ejemplo 123, Posadas, Misiones
+                        </p>
+                        <p className="text-gray-600">
+                          Teléfono: +54 (376) 123-4567
+                        </p>
+                        <div className="flex justify-center space-x-4 mt-4">
+                          <a 
+                            href="https://wa.me/TUNUMERODEWHATSAPP" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full flex items-center transition duration-300"
+                          >
+                            <FaWhatsapp className="mr-2" /> WhatsApp
+                          </a>
+                          <a 
+                            href="mailto:contacto@raicesdeposadas.edu.ar"
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full flex items-center transition duration-300"
+                          >
+                            <FaEnvelope className="mr-2" /> Email
+                          </a>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  </Suspense>
+                </div>
+              </div>
+            </motion.section>
+          </Suspense>
+        </main>
+
+        <Suspense fallback={<div>Cargando...</div>}>
+          <Footer />
+        </Suspense>
+      </div>
+    </LazyMotion>
   )
 }
 

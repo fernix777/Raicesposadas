@@ -1,155 +1,198 @@
-import { useState, FormEvent, useEffect } from 'react';
-import emailjs from '@emailjs/browser';
-import { emailConfig } from '../config/emailjs';
+import React, { memo, useCallback } from 'react'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import emailjs from '@emailjs/browser'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FaPaperPlane, FaCheckCircle } from 'react-icons/fa'
 
-const ContactForm = () => {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    telefono: '',
-    asunto: '',
-    mensaje: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'none' | 'success' | 'error'>('none');
+// Definición del esquema de validación con Yup
+const contactSchema = yup.object().shape({
+  name: yup
+    .string()
+    .required('El nombre es obligatorio')
+    .min(2, 'El nombre debe tener al menos 2 caracteres'),
+  email: yup
+    .string()
+    .required('El correo electrónico es obligatorio')
+    .email('Correo electrónico inválido'),
+  message: yup
+    .string()
+    .required('El mensaje es obligatorio')
+    .min(10, 'El mensaje debe tener al menos 10 caracteres')
+})
 
-  useEffect(() => {
-    emailjs.init(emailConfig.publicKey);
-  }, []);
+interface ContactFormData {
+  name: string
+  email: string
+  message: string
+}
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus('none');
+const ContactForm: React.FC = memo(() => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting, isSubmitSuccessful }
+  } = useForm<ContactFormData>({
+    resolver: yupResolver(contactSchema),
+    mode: 'onBlur'
+  })
 
+  const onSubmit = useCallback(async (data: ContactFormData) => {
     try {
       await emailjs.send(
-        emailConfig.serviceId,
-        emailConfig.templateId,
+        'service_k2y51le', 
+        'template_cdiwoze',
         {
-          to_email: 'djfernix@gmail.com',
-          from_name: formData.nombre,
-          from_email: formData.email,
-          phone: formData.telefono,
-          subject: formData.asunto,
-          message: formData.mensaje,
-        }
-      );
-
-      setSubmitStatus('success');
-      setFormData({
-        nombre: '',
-        email: '',
-        telefono: '',
-        asunto: '',
-        mensaje: ''
-      });
+          from_name: data.name,
+          from_email: data.email,
+          message: data.message
+        },
+        'nmSkiqk2c-XdzhiYo'
+      )
+      reset()
     } catch (error) {
-      console.error('Error al enviar el email:', error);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
+      console.error('Error enviando el formulario:', error)
     }
-  };
+  }, [reset])
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 border border-green-100">
-      {submitStatus === 'success' && (
-        <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg">
-          ¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.
-        </div>
-      )}
-      
-      {submitStatus === 'error' && (
-        <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
-          Hubo un error al enviar el mensaje. Por favor, intenta nuevamente.
-        </div>
-      )}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="bg-white p-8 rounded-xl shadow-lg"
+    >
+      <h2 className="text-2xl font-bold text-green-800 mb-6 text-center">
+        Contáctanos
+      </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-1">
-            Nombre Completo *
-          </label>
-          <input
-            type="text"
-            id="nombre"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-            value={formData.nombre}
-            onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-          />
-        </div>
+      <AnimatePresence>
+        {isSubmitSuccessful ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="text-center text-green-600 flex flex-col items-center"
+          >
+            <FaCheckCircle className="text-6xl mb-4" />
+            <p className="text-xl font-semibold">
+              ¡Mensaje enviado con éxito!
+            </p>
+            <p className="text-gray-600 mt-2">
+              Nos pondremos en contacto pronto.
+            </p>
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className="mb-4">
+              <label 
+                htmlFor="name" 
+                className="block text-gray-700 font-medium mb-2"
+              >
+                Nombre
+              </label>
+              <input
+                {...register('name')}
+                type="text"
+                id="name"
+                placeholder="Tu nombre"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  errors.name ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.name && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-500 text-sm mt-1"
+                >
+                  {errors.name.message}
+                </motion.p>
+              )}
+            </div>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email *
-          </label>
-          <input
-            type="email"
-            id="email"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
-        </div>
+            <div className="mb-4">
+              <label 
+                htmlFor="email" 
+                className="block text-gray-700 font-medium mb-2"
+              >
+                Correo Electrónico
+              </label>
+              <input
+                {...register('email')}
+                type="email"
+                id="email"
+                placeholder="tu@email.com"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  errors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.email && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-500 text-sm mt-1"
+                >
+                  {errors.email.message}
+                </motion.p>
+              )}
+            </div>
 
-        <div>
-          <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">
-            Teléfono
-          </label>
-          <input
-            type="tel"
-            id="telefono"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-            value={formData.telefono}
-            onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-          />
-        </div>
+            <div className="mb-6">
+              <label 
+                htmlFor="message" 
+                className="block text-gray-700 font-medium mb-2"
+              >
+                Mensaje
+              </label>
+              <textarea
+                {...register('message')}
+                id="message"
+                rows={4}
+                placeholder="Escribe tu mensaje aquí"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none ${
+                  errors.message ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.message && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-500 text-sm mt-1"
+                >
+                  {errors.message.message}
+                </motion.p>
+              )}
+            </div>
 
-        <div>
-          <label htmlFor="asunto" className="block text-sm font-medium text-gray-700 mb-1">
-            Asunto *
-          </label>
-          <input
-            type="text"
-            id="asunto"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-            value={formData.asunto}
-            onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
-          />
-        </div>
+            <motion.button
+              type="submit"
+              disabled={isSubmitting}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`w-full py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center ${
+                isSubmitting 
+                  ? 'bg-green-300 cursor-not-allowed' 
+                  : 'bg-green-500 hover:bg-green-600'
+              }`}
+            >
+              {isSubmitting ? (
+                <span>Enviando...</span>
+              ) : (
+                <>
+                  <FaPaperPlane className="mr-2" /> Enviar Mensaje
+                </>
+              )}
+            </motion.button>
+          </form>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+})
 
-        <div>
-          <label htmlFor="mensaje" className="block text-sm font-medium text-gray-700 mb-1">
-            Mensaje *
-          </label>
-          <textarea
-            id="mensaje"
-            required
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
-            value={formData.mensaje}
-            onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
-          ></textarea>
-        </div>
+ContactForm.displayName = 'ContactForm'
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-all
-            ${isSubmitting 
-              ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-green-700 hover:bg-green-800 active:transform active:scale-[0.98]'
-            }`}
-        >
-          {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
-        </button>
-      </form>
-    </div>
-  );
-};
-
-export default ContactForm;
+export default ContactForm
