@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import Logo from './Logo';
+import { Link } from 'react-router-dom';
+
+// Importar banderas
+import SpainFlag from '../assets/flags/es.svg';
+import ThailandFlag from '../assets/flags/th.svg';
 
 const navVariants = {
   hidden: { opacity: 0, y: -50 },
@@ -50,13 +56,33 @@ const mobileMenuVariants = {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  // Detectar idioma del navegador y configurar idioma inicial
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language');
+    const browserLanguage = navigator.language.split('-')[0];
+    
+    if (savedLanguage) {
+      i18n.changeLanguage(savedLanguage);
+    } else if (['es', 'th'].includes(browserLanguage)) {
+      i18n.changeLanguage(browserLanguage);
+      localStorage.setItem('language', browserLanguage);
+    }
+  }, []);
+
+  const toggleLanguage = () => {
+    const newLanguage = i18n.language === 'es' ? 'th' : 'es';
+    i18n.changeLanguage(newLanguage);
+    localStorage.setItem('language', newLanguage);
+  };
 
   const navLinks = [
-    { name: 'Inicio', href: '#inicio' },
-    { name: 'Propuesta Educativa', href: '#propuesta' },
-    { name: 'Nosotros', href: '#nosotros' },
-    { name: 'Niveles', href: '#niveles' },
-    { name: 'Contacto', href: '#contacto' }
+    { name: t('navbar.home'), href: '#inicio' },
+    { name: t('navbar.propuesta'), href: '#propuesta' },
+    { name: t('navbar.nosotros'), href: '#nosotros' },
+    { name: t('navbar.niveles'), href: '#niveles' },
+    { name: t('navbar.contacto'), href: '#contacto' }
   ]
 
   return (
@@ -79,7 +105,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <motion.div 
-          className="hidden md:flex space-x-6"
+          className="hidden md:flex space-x-6 items-center"
           initial="hidden"
           animate="visible"
         >
@@ -97,16 +123,47 @@ const Navbar = () => {
               {link.name}
             </motion.a>
           ))}
+
+          {/* Language Selector for Desktop */}
+          <motion.button 
+            onClick={toggleLanguage} 
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="ml-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center"
+          >
+            <img 
+              src={i18n.language === 'es' ? ThailandFlag : SpainFlag} 
+              alt="Language" 
+              className="w-6 h-6 mr-2 rounded-full"
+            />
+            {i18n.language === 'es' ? 'TH' : 'ES'}
+          </motion.button>
         </motion.div>
 
         {/* Mobile Menu Toggle */}
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-2xl text-white"
-        >
-          {isOpen ? <FaTimes /> : <FaBars />}
-        </motion.button>
+        <div className="flex items-center md:hidden space-x-2">
+          {/* Language Toggle for Mobile */}
+          <motion.button 
+            onClick={toggleLanguage} 
+            whileTap={{ scale: 0.9 }}
+            className="p-2 bg-green-500 text-white rounded-full flex items-center"
+          >
+            <img 
+              src={i18n.language === 'es' ? ThailandFlag : SpainFlag} 
+              alt="Language" 
+              className="w-6 h-6 mr-2 rounded-full"
+            />
+            {i18n.language === 'es' ? 'TH' : 'ES'}
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-2xl text-white"
+          >
+            {isOpen ? <FaTimes /> : <FaBars />}
+          </motion.button>
+        </div>
 
         {/* Mobile Navigation */}
         <AnimatePresence>

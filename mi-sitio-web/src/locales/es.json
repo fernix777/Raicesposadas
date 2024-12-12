@@ -1,0 +1,101 @@
+{
+  "navbar": {
+    "home": "Inicio",
+    "propuesta": "Propuesta",
+    "nosotros": "Nosotros",
+    "niveles": "Niveles",
+    "contacto": "Contacto"
+  },
+  "home": {
+    "title": "Raíces de Posadas",
+    "subtitle": "Educación con Pasión",
+    "description": "Somos una institución educativa comprometida con el desarrollo integral de nuestros estudiantes.",
+    "cta": "Contáctanos",
+    "sections": {
+      "propuesta": {
+        "title": "Nuestra Propuesta Educativa",
+        "description": "Formamos estudiantes comprometidos, creativos y preparados para los desafíos del futuro.",
+        "button": "Conoce Nuestros Niveles",
+        "cards": {
+          "integral": {
+            "title": "Desarrollo Integral",
+            "description": "Fomentamos el crecimiento académico, emocional y social."
+          },
+          "innovacion": {
+            "title": "Innovación Educativa",
+            "description": "Metodologías modernas que impulsan el pensamiento crítico."
+          },
+          "valores": {
+            "title": "Valores Fundamentales",
+            "description": "Formación en valores de respeto, responsabilidad y empatía."
+          }
+        }
+      },
+      "nosotros": {
+        "title": "Sobre Nosotros",
+        "description": "Con más de 30 años de trayectoria, Raices de Posadas se ha consolidado como una institución líder en educación en la región. Nuestro compromiso con la excelencia académica y la formación integral de nuestros estudiantes nos distingue. Contamos con un equipo docente altamente calificado y una infraestructura moderna que permite el desarrollo óptimo de todas las actividades educativas.",
+        "mision": "Nuestra Misión",
+        "vision": "Nuestra Visión"
+      },
+      "niveles": {
+        "title": "Nuestros Niveles",
+        "button": "Consultar",
+        "cards": {
+          "inicial": {
+            "title": "Nivel Inicial",
+            "description": "Primeros pasos en el aprendizaje"
+          },
+          "primario": {
+            "title": "Nivel Primario",
+            "description": "Formación integral y fundamental"
+          },
+          "secundario": {
+            "title": "Nivel Secundario",
+            "description": "Preparación para el futuro"
+          }
+        },
+        "inicial": {
+          "title": "Nivel Inicial",
+          "description": "Primeros pasos en el aprendizaje"
+        },
+        "primario": {
+          "title": "Nivel Primario",
+          "description": "Desarrollo de habilidades fundamentales"
+        },
+        "secundario": {
+          "title": "Nivel Secundario",
+          "description": "Preparación para el futuro"
+        }
+      },
+      "contacto": {
+        "title": "Contáctanos",
+        "description": "Estamos aquí para responder todas tus preguntas.",
+        "ubicacion": {
+          "title": "Nuestra Ubicación",
+          "address": "Av. Ejemplo 123, Posadas, Misiones",
+          "phone": "Teléfono: +54 (376) 123-4567",
+          "whatsApp": "WhatsApp",
+          "email": "Email"
+        }
+      }
+    }
+  },
+  "contacto": {
+    "title": "Contáctanos",
+    "name": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "nameRequired": "El nombre es obligatorio",
+    "email": "Correo Electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "emailInvalid": "Correo electrónico inválido",
+    "emailRequired": "El correo electrónico es obligatorio",
+    "message": "Mensaje",
+    "messagePlaceholder": "Escribe tu mensaje aquí",
+    "messageRequired": "El mensaje es obligatorio",
+    "send": "Enviar Mensaje",
+    "sending": "Enviando...",
+    "successMessage": "¡Mensaje enviado con éxito!",
+    "successDescription": "Nos pondremos en contacto pronto.",
+    "errorMessage": "Hubo un error al enviar el mensaje. Intenta de nuevo."
+  }
+}

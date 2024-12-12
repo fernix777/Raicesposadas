@@ -5,6 +5,7 @@ import * as yup from 'yup'
 import emailjs from '@emailjs/browser'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaPaperPlane, FaCheckCircle } from 'react-icons/fa'
+import { useTranslation } from 'react-i18next'
 
 // Definición del esquema de validación con Yup
 const contactSchema = yup.object().shape({
@@ -29,13 +30,21 @@ interface ContactFormData {
 }
 
 const ContactForm: React.FC = memo(() => {
+  const { t } = useTranslation();
+  
+  const schema = yup.object().shape({
+    name: yup.string().required(t('contacto.nameRequired')),
+    email: yup.string().email(t('contacto.emailInvalid')).required(t('contacto.emailRequired')),
+    message: yup.string().required(t('contacto.messageRequired'))
+  });
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = useForm<ContactFormData>({
-    resolver: yupResolver(contactSchema),
+    resolver: yupResolver(schema),
     mode: 'onBlur'
   })
 
@@ -65,7 +74,7 @@ const ContactForm: React.FC = memo(() => {
       className="bg-white p-8 rounded-xl shadow-lg"
     >
       <h2 className="text-2xl font-bold text-green-800 mb-6 text-center">
-        Contáctanos
+        {t('contacto.title')}
       </h2>
 
       <AnimatePresence>
@@ -78,10 +87,10 @@ const ContactForm: React.FC = memo(() => {
           >
             <FaCheckCircle className="text-6xl mb-4" />
             <p className="text-xl font-semibold">
-              ¡Mensaje enviado con éxito!
+              {t('contacto.successMessage')}
             </p>
             <p className="text-gray-600 mt-2">
-              Nos pondremos en contacto pronto.
+              {t('contacto.successDescription')}
             </p>
           </motion.div>
         ) : (
@@ -91,13 +100,13 @@ const ContactForm: React.FC = memo(() => {
                 htmlFor="name" 
                 className="block text-gray-700 font-medium mb-2"
               >
-                Nombre
+                {t('contacto.name')}
               </label>
               <input
                 {...register('name')}
                 type="text"
                 id="name"
-                placeholder="Tu nombre"
+                placeholder={t('contacto.namePlaceholder')}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
                 }`}
@@ -118,13 +127,13 @@ const ContactForm: React.FC = memo(() => {
                 htmlFor="email" 
                 className="block text-gray-700 font-medium mb-2"
               >
-                Correo Electrónico
+                {t('contacto.email')}
               </label>
               <input
                 {...register('email')}
                 type="email"
                 id="email"
-                placeholder="tu@email.com"
+                placeholder={t('contacto.emailPlaceholder')}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
@@ -145,13 +154,13 @@ const ContactForm: React.FC = memo(() => {
                 htmlFor="message" 
                 className="block text-gray-700 font-medium mb-2"
               >
-                Mensaje
+                {t('contacto.message')}
               </label>
               <textarea
                 {...register('message')}
                 id="message"
                 rows={4}
-                placeholder="Escribe tu mensaje aquí"
+                placeholder={t('contacto.messagePlaceholder')}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none ${
                   errors.message ? 'border-red-500' : 'border-gray-300'
                 }`}
@@ -179,10 +188,10 @@ const ContactForm: React.FC = memo(() => {
               }`}
             >
               {isSubmitting ? (
-                <span>Enviando...</span>
+                <span>{t('contacto.sending')}</span>
               ) : (
                 <>
-                  <FaPaperPlane className="mr-2" /> Enviar Mensaje
+                  <FaPaperPlane className="mr-2" /> {t('contacto.send')}
                 </>
               )}
             </motion.button>
