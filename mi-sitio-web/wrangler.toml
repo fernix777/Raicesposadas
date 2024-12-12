@@ -1,0 +1,15 @@
+[build]
+command = "npm run build"
+buildOutput = "dist"
+
+[site]
+bucket = "dist"
+entry-point = "."
+
+[env.production]
+name = "raices-de-posadas"
+
+[vars]
+VITE_EMAILJS_SERVICE_ID = "service_k2y51le"
+VITE_EMAILJS_TEMPLATE_ID = "template_ylgq1uk"
+VITE_EMAILJS_PUBLIC_KEY = "nmSkiqk2c-XdzhiYo"
